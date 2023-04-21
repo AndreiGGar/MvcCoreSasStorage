@@ -1,7 +1,11 @@
 ﻿using Azure.Data.Tables;
 using MvcCoreSasStorage.Helpers;
 using MvcCoreSasStorage.Models;
+using System.Net;
+using System;
 using System.Xml.Linq;
+using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Configuration;
 
 namespace MvcCoreSasStorage.Services
 {
@@ -12,9 +16,11 @@ namespace MvcCoreSasStorage.Services
         private XDocument documentAlumnos;
         private string pathAlumnos;
         private bool isXmlLoaded = false;
+        private string UrlApi;
 
-        public ServiceStorageTables(TableServiceClient tableService, HelperPathProvider helper)
+        public ServiceStorageTables(TableServiceClient tableService, HelperPathProvider helper, IConfiguration configuration)
         {
+            this.UrlApi = configuration.GetValue<string>("ApiUrls:ApiTableTokens");
             this.helper = helper;
             this.pathAlumnos = this.helper.MapPath("alumnos_tables.xml", Folders.Documents);
             this.tableAlumnos = tableService.GetTableClient("alumnos");
@@ -81,6 +87,34 @@ namespace MvcCoreSasStorage.Services
         {
             var query = this.tableAlumnos.Query<Alumno>(x => x.Curso == curso);
             return query.ToList();
+        }
+
+        public async Task<List<Alumno>> GetAlumnosAsync(string token)
+        {
+            Uri uriToken = new Uri(token);
+            this.tableAlumnos = new TableClient(uriToken);
+            List<Alumno> alumnos = new List<Alumno>();
+            var consulta = this.tableAlumnos.QueryAsync<Alumno>
+                (filter: "");
+            await foreach (Alumno al in consulta)
+            {
+                alumnos.Add(al);
+            }
+            return alumnos;
+        }
+
+        public async Task<string> GetTokenAsync(string curso)
+        {
+            using (WebClient client = new WebClient())
+            {
+                string request = "/api/tabletoken/generatetoken/" + curso;
+                client.Headers["content-type"] = "application/json";
+                Uri uri = new Uri(this.UrlApi + request);
+                string data = await client.DownloadStringTaskAsync(uri);
+                JObject objetoJSON = JObject.Parse(data);
+                string token = objetoJSON.GetValue("token").ToString();
+                return token;
+            }
         }
     }
 }
