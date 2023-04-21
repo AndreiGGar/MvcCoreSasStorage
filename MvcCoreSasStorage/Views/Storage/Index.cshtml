@@ -1,0 +1,44 @@
+﻿@model List<Alumno>
+
+@{
+    ViewData["Title"] = "Alumnos";
+}
+
+<h4>Alumnos</h4>
+
+<a asp-action="Create" class="btn btn-success mb-4">
+    Crear nuevo alumno
+</a>
+
+<form method="post">
+    <label for="curso">Filtrar por curso:</label>
+    <input type="text" name="curso" id="curso" value="" class="form-control mb-4" />
+    <button class="btn btn-dark mb-4" type="submit">Filtrar</button>
+</form>
+
+@if (Model != null)
+{
+    <table class="table table-active table-hover table-bordered m-auto text-center">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Apellidos</th>
+                <th>Nota</th>
+                <th>Curso</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var alumno in Model)
+            {
+                <tr>
+                    <td>@alumno.IdAlumno</td>
+                    <td>@alumno.Nombre</td>
+                    <td>@alumno.Apellidos</td>
+                    <td>@alumno.Nota</td>
+                    <td>@alumno.Curso</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

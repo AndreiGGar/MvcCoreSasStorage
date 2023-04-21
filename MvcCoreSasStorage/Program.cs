@@ -1,11 +1,17 @@
+using Azure.Data.Tables;
+using MvcCoreSasStorage.Helpers;
+using MvcCoreSasStorage.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+string azureKeys = builder.Configuration.GetValue<string>("AzureKeys:StorageAccount");
+builder.Services.AddTransient<TableServiceClient>(x => new TableServiceClient(azureKeys));
+builder.Services.AddTransient<ServiceStorageTables>();
+builder.Services.AddSingleton<HelperPathProvider>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
-
-
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

@@ -1,0 +1,41 @@
+﻿@model Alumno
+
+<h2>Create Alumno</h2>
+
+<form method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="IdAlumno" class="control-label"></label>
+        <input asp-for="IdAlumno" class="form-control" />
+        <span asp-validation-for="IdAlumno" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Nombre" class="control-label"></label>
+        <input asp-for="Nombre" class="form-control" />
+        <span asp-validation-for="Nombre" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Apellidos" class="control-label"></label>
+        <input asp-for="Apellidos" class="form-control" />
+        <span asp-validation-for="Apellidos" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Nota" class="control-label"></label>
+        <input asp-for="Nota" class="form-control" />
+        <span asp-validation-for="Nota" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Curso" class="control-label"></label>
+        <input asp-for="Curso" class="form-control" />
+        <span asp-validation-for="Curso" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <button class="btn btn-info">
+            Crear alumno
+        </button>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

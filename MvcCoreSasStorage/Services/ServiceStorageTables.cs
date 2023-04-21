@@ -11,18 +11,27 @@ namespace MvcCoreSasStorage.Services
         private HelperPathProvider helper;
         private XDocument documentAlumnos;
         private string pathAlumnos;
+        private bool isXmlLoaded = false;
 
         public ServiceStorageTables(TableServiceClient tableService, HelperPathProvider helper)
         {
+            this.helper = helper;
+            this.pathAlumnos = this.helper.MapPath("alumnos_tables.xml", Folders.Documents);
             this.tableAlumnos = tableService.GetTableClient("alumnos");
             Task.Run(async () =>
             {
                 await this.tableAlumnos.CreateIfNotExistsAsync();
             });
-            this.helper = helper;
-            this.pathAlumnos = this.helper.MapPath("alumnos_tables.xml", Folders.Documents);
-            documentAlumnos = XDocument.Load(this.pathAlumnos);
 
+            if (!isXmlLoaded)
+            {
+                documentAlumnos = XDocument.Load(this.pathAlumnos);
+                Task.Run(async () =>
+                {
+                    await LoadXML();
+                });
+                isXmlLoaded = true;
+            }
         }
 
         public async Task LoadXML()
@@ -65,7 +74,7 @@ namespace MvcCoreSasStorage.Services
             {
                 alumnos.Add(item);
             }
-            return alumnos;
+            return alumnos.OrderBy(x => x.IdAlumno).ToList();
         }
 
         public async Task<List<Alumno>> GetAlumnosCursoAsync(string curso)
